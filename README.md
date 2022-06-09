@@ -1,3 +1,10 @@
+GNU gettext tools for windows, patched for JPMS Java
+====================================================
+
+Based on the vlasvik/gettext-tools-windows, but patched additionally msgfmt for creation of java classes as discussed here:
+https://lists.gnu.org/archive/html/bug-gettext/2022-06/msg00000.html
+
+
 
 GNU gettext tools for Windows
 =============================
