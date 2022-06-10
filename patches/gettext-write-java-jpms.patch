@@ -1,0 +1,115 @@
+--- a/gettext-tools/src/write-java.c	2020-07-05 22:09:08.000000000 +0200
++++ b/gettext-tools/src/write-java.c	2022-06-10 22:45:11.650710700 +0200
+@@ -440,7 +440,7 @@
+       bool first;
+       const char *p;
+ 
+-      fprintf (stream, "new java.lang.String[] { ");
++      fprintf (stream, "new String[] { ");
+       for (p = mp->msgstr, first = true;
+            p < mp->msgstr + mp->msgstr_len;
+            p += strlen (p) + 1, first = false)
+@@ -471,7 +471,7 @@
+   if (collisions)
+     {
+       fprintf (stream, "    {\n");
+-      fprintf (stream, "      java.lang.Object found = table[idx];\n");
++      fprintf (stream, "      Object found = table[idx];\n");
+       fprintf (stream, "      if (found == null)\n");
+       fprintf (stream, "        return null;\n");
+       fprintf (stream, "      if (msgid.equals(found))\n");
+@@ -483,7 +483,7 @@
+       fprintf (stream, "      idx += incr;\n");
+       fprintf (stream, "      if (idx >= %d)\n", 2 * hashsize);
+       fprintf (stream, "        idx -= %d;\n", 2 * hashsize);
+-      fprintf (stream, "      java.lang.Object found = table[idx];\n");
++      fprintf (stream, "      Object found = table[idx];\n");
+       fprintf (stream, "      if (found == null)\n");
+       fprintf (stream, "        return null;\n");
+       fprintf (stream, "      if (msgid.equals(found))\n");
+@@ -492,7 +492,7 @@
+     }
+   else
+     {
+-      fprintf (stream, "    java.lang.Object found = table[idx];\n");
++      fprintf (stream, "    Object found = table[idx];\n");
+       fprintf (stream, "    if (found != null && msgid.equals(found))\n");
+       fprintf (stream, "      return table[idx + 1];\n");
+       fprintf (stream, "    return null;\n");
+@@ -805,7 +805,7 @@
+          it is of type Object[], otherwise of type String[].  We use a static
+          code block because that makes less code:  The Java compilers also
+          generate code for the 'null' entries, which is dumb.  */
+-      table_eltype = (plurals ? "java.lang.Object" : "java.lang.String");
++      table_eltype = (plurals ? "Object" : "String");
+       fprintf (stream, "  private static final %s[] table;\n", table_eltype);
+       {
+         /* With the Sun javac compiler, each assignment takes 5 to 8 bytes
+@@ -858,8 +858,8 @@
+       if (plurals)
+         {
+           bool first;
+-          fprintf (stream, "  public static final java.lang.String[] get_msgid_plural_table () {\n");
+-          fprintf (stream, "    return new java.lang.String[] { ");
++          fprintf (stream, "  public static final String[] get_msgid_plural_table () {\n");
++          fprintf (stream, "    return new String[] { ");
+           first = true;
+           for (j = 0; j < mlp->nitems; j++)
+             {
+@@ -880,18 +880,18 @@
+         {
+           /* Emit the lookup function.  It is a common subroutine for
+              handleGetObject and ngettext.  */
+-          fprintf (stream, "  public java.lang.Object lookup (java.lang.String msgid) {\n");
++          fprintf (stream, "  public Object lookup (String msgid) {\n");
+           write_lookup_code (stream, hashsize, collisions);
+           fprintf (stream, "  }\n");
+         }
+ 
+       /* Emit the handleGetObject function.  It is declared abstract in
+          ResourceBundle.  It implements a local version of gettext.  */
+-      fprintf (stream, "  public java.lang.Object handleGetObject (java.lang.String msgid) throws java.util.MissingResourceException {\n");
++      fprintf (stream, "  public Object handleGetObject (String msgid) throws java.util.MissingResourceException {\n");
+       if (plurals)
+         {
+-          fprintf (stream, "    java.lang.Object value = lookup(msgid);\n");
+-          fprintf (stream, "    return (value instanceof java.lang.String[] ? ((java.lang.String[])value)[0] : value);\n");
++          fprintf (stream, "    Object value = lookup(msgid);\n");
++          fprintf (stream, "    return (value instanceof String[] ? ((String[])value)[0] : value);\n");
+         }
+       else
+         write_lookup_code (stream, hashsize, collisions);
+@@ -908,8 +908,8 @@
+       fprintf (stream, "        public boolean hasMoreElements () {\n");
+       fprintf (stream, "          return (idx < %d);\n", 2 * hashsize);
+       fprintf (stream, "        }\n");
+-      fprintf (stream, "        public java.lang.Object nextElement () {\n");
+-      fprintf (stream, "          java.lang.Object key = table[idx];\n");
++      fprintf (stream, "        public Object nextElement () {\n");
++      fprintf (stream, "          Object key = table[idx];\n");
+       fprintf (stream, "          do idx += 2; while (idx < %d && table[idx] == null);\n",
+                2 * hashsize);
+       fprintf (stream, "          return key;\n");
+@@ -990,18 +990,18 @@
+         {
+           /* Emit the lookup function.  It is a common subroutine for
+              handleGetObject and ngettext.  */
+-          fprintf (stream, "  public java.lang.Object lookup (java.lang.String msgid) {\n");
++          fprintf (stream, "  public Object lookup (String msgid) {\n");
+           fprintf (stream, "    return table.get(msgid);\n");
+           fprintf (stream, "  }\n");
+         }
+ 
+       /* Emit the handleGetObject function.  It is declared abstract in
+          ResourceBundle.  It implements a local version of gettext.  */
+-      fprintf (stream, "  public java.lang.Object handleGetObject (java.lang.String msgid) throws java.util.MissingResourceException {\n");
++      fprintf (stream, "  public Object handleGetObject (String msgid) throws java.util.MissingResourceException {\n");
+       if (plurals)
+         {
+-          fprintf (stream, "    java.lang.Object value = table.get(msgid);\n");
+-          fprintf (stream, "    return (value instanceof java.lang.String[] ? ((java.lang.String[])value)[0] : value);\n");
++          fprintf (stream, "    Object value = table.get(msgid);\n");
++          fprintf (stream, "    return (value instanceof String[] ? ((String[])value)[0] : value);\n");
+         }
+       else
+         fprintf (stream, "    return table.get(msgid);\n");
